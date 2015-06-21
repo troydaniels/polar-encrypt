@@ -1,6 +1,6 @@
 # polar-encryption
 
-By taking Fermat's spiral, and a random key, we can set up a seemingly unbreakable encryption.
+By taking [Fermat's spiral](http://mathworld.wolfram.com/FermatsSpiral.html), and a random key, we can set up a seemingly unbreakable encryption.
 
 First, we pick a base **b**, and map integers [0..b-1] to random, unique, integers in the range  [1..inf).
 This mapping **M**, together with the base, for the encryption and decryption key, which should, using some other method, be distributed to communication endpoints.
