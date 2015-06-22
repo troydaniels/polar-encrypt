@@ -13,6 +13,8 @@ function main()
     $polarEncrypt->setBase(10);
     $testMapping = array(1,3,5,7,11,13,17,19,23,27);
     $polarEncrypt->setMapping($testMapping);
+    $testDisplacement = array(1,3,5,7,11,13,17,19,23,27,29,31,37,41);
+    $polarEncrypt->setDisplacement($testDisplacement);
 
     $unencrypted = file_get_contents('https://en.wikipedia.org/wiki/Encryption');
     $encrypted = $polarEncrypt->encrypt($unencrypted);

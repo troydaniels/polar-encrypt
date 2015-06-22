@@ -6,6 +6,7 @@
 class PolarEncrypt
 {
     private $mapping;
+    private $displacement;
     private $mapMin = 1;
     private $mapMax = 100;
     private $base = 8;
@@ -22,6 +23,7 @@ class PolarEncrypt
         unset($this->mapping);
         $this->base=$newBase;
         self::map();
+        self::displace();
     }
 
     public function getBase()
@@ -50,6 +52,17 @@ class PolarEncrypt
         return $this-mapCount;
     }
 
+    public function setDisplacement(array $displacement)
+    {
+        unset($this->displacement);
+        $this->displacement = $displacement;
+    }
+
+    public function getDisplacement()
+    {
+        return $this->displacement;
+    }
+
     //Takes a string and returns its polar encryption
     public function encrypt($stringIn)
     {
@@ -62,8 +75,8 @@ class PolarEncrypt
             //Separate numbers by ' ' and finish lines with a '\n '
             foreach(str_split($radixRep) as $number) {
                  //Theta of the current mapCount-indexed intersection from mapping[]
-                 $encrypted .= self::xToTheta($this->mapping[$this->mapCount], $this->mapping[$number]) . " ";
-                 $this->mapCount=($this->mapCount+1) % $this->base;
+                 $encrypted .= self::xToTheta($this->displacement[$this->mapCount], $this->mapping[$number]) . " ";
+                 $this->mapCount=($this->mapCount+1) % count($this->displacement);
             }
             $encrypted .= "\n ";
         }
@@ -82,9 +95,9 @@ class PolarEncrypt
                 $decrypted .= chr(base_convert($baseRep, $this->base, 10));
                 unset($unMapped);
             } else {
-                $xValue=self::thetaToX($this->mapping[$this->mapCount], $theta);
+                $xValue=self::thetaToX($this->displacement[$this->mapCount], $theta);
                 $unMapped[] = array_search($xValue, $this->mapping);
-                $this->mapCount=($this->mapCount+1) % $this->base;
+                $this->mapCount=($this->mapCount+1) % count($this->displacement);
             }
         }
         return $decrypted;
@@ -138,5 +151,23 @@ class PolarEncrypt
             $this->mapping[$i]=$randInt;
         }
     }
+
+    //Generates a random array of displacements, of length base^2 < l > base+1
+    //with random displacements [1, l]
+    private function displace()
+    {
+        $randInt;
+        $elements = rand($this->base+1, $this->base*$this->base);
+        $this->displacement = array();
+        for($i=0; $i < $elements; $i++) {
+            do {
+                //Use random_int() with PHP 7
+                $randInt=rand(1, $elements);
+            } while(in_array($randInt, $this->displacement));
+               //We now have a unique random number from [1,elements]
+               $this->displacement[$i]=$randInt;
+        }
+    }
+
 }
 
