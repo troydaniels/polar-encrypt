@@ -72,7 +72,7 @@ class PolarEncrypt
             //Get character in base representation
             $radixRep = base_convert(ord($character), 10, $this->base);
             //Translate with mapping, add offset,  and add theta to encryption
-            //Separate numbers by ' ' and finish lines with a '\n '
+            //Separate numbers by ' ' and finish lines with an eol
             foreach(str_split($radixRep) as $number) {
                  //Theta of the current mapCount-indexed intersection from mapping[]
                  $encrypted .= self::xToTheta($this->displacement[$this->mapCount], $this->mapping[$number]) . " ";
@@ -80,6 +80,8 @@ class PolarEncrypt
             }
             $encrypted .= "\n ";
         }
+        //Spin for a bit, to prevent timing attacks
+        time_nanosleep(0, rand(1, 999999999));
         return $encrypted;
     }
 
@@ -100,6 +102,8 @@ class PolarEncrypt
                 $this->mapCount=($this->mapCount+1) % count($this->displacement);
             }
         }
+        //Spin for a bit, to prevent timing attacks
+        time_nanosleep(0, rand(1, 999999999));
         return $decrypted;
     }
 
@@ -134,7 +138,8 @@ class PolarEncrypt
         $root = self::posFermatRoot($nValue);
 
         //radius is given by the x-coordinate of the current root + k-times the distance between roots
-        return acos($root/($root+2*M_PI*($kValue)));
+        //round to decrease precision, and make brute forcing more difficult
+        return round(acos($root/($root+2*M_PI*($kValue))), 5);
     }
 
     //Finds a random mapping of numbers [0...base-1] to unique integers [mapMin...mapMax]
@@ -152,12 +157,12 @@ class PolarEncrypt
         }
     }
 
-    //Generates a random array of displacements, of length base^2 < l > base+1
-    //with random displacements [1, l]
+    //Generates a random array of displacements, of length l st. base*base < l > base+1
+    //with random displacements [1, l], to make brute force more difficult
     private function displace()
     {
         $randInt;
-        $elements = rand($this->base+1, $this->base*$this->base);
+        $elements = rand($this->base+1, $this->base * $this->base);
         $this->displacement = array();
         for($i=0; $i < $elements; $i++) {
             do {
@@ -168,6 +173,5 @@ class PolarEncrypt
                $this->displacement[$i]=$randInt;
         }
     }
-
 }
 
