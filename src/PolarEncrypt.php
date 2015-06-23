@@ -15,6 +15,7 @@ class PolarEncrypt
     public function __construct()
     {
         self::map();
+        self::displace();
     }
 
     //Sets a base and updates mapping
@@ -139,7 +140,7 @@ class PolarEncrypt
 
         //radius is given by the x-coordinate of the current root + k-times the distance between roots
         //round to decrease precision, and make brute forcing more difficult
-        return round(acos($root/($root+2*M_PI*($kValue))), 5);
+        return round(acos($root/($root+2*M_PI*($kValue))), 3);
     }
 
     //Finds a random mapping of numbers [0...base-1] to unique integers [mapMin...mapMax]
